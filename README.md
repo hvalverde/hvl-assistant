@@ -53,4 +53,4 @@ $wp->downloadMedia();
 
 ## License
 
-HVL Assistant is licensed under the MIT License. See [Link to License](LICENSE) for more information.
+HVL Assistant is licensed under the MIT License. See [LICENSE](LICENSE) for more information.
