@@ -42,10 +42,10 @@ The following example will save all of the JSON data from the WordPress API and 
 ```php
 use HValverde\HVLAssistant\HVLWordPress;
 
-$wp_host	= 'https://www.my-wordpress-domain.com';
-$wp_json	=  __DIR__ . '/wp_json/';
-$wp_media	= __DIR__ . '/wp_media/';
-$wp			= new HVLWordPress($wp_host, $wp_json, $wp_media);
+$wp_host = 'https://www.my-wordpress-domain.com';
+$wp_json =  __DIR__ . '/wp_json/';
+$wp_media = __DIR__ . '/wp_media/';
+$wp = new HVLWordPress($wp_host, $wp_json, $wp_media);
 
 $wp->saveAllData();
 $wp->downloadMedia();
