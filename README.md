@@ -32,6 +32,7 @@ Once you've installed HVL Assistant, you can use the composer autoloader with th
 - HValverde\HVLAssistant\HVLCsv
 - HValverde\HVLAssistant\HVLFileSys
 - HValverde\HVLAssistant\HVLJson
+- HValverde\HVLAssistant\HVLString
 - HValverde\HVLAssistant\HVLUrl
 - HValverde\HVLAssistant\HVLWordPress
 

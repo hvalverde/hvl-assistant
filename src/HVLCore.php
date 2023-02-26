@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace HValverde\HVLAssistant;
 
+use HValverde\HVLAssistant\HVLString;
+
 class HVLCore
 {
 	public static function camelCaseToSnakeCase(string $str): string
 	{
-		$str = preg_replace('/([A-Z])/', '_$1', $str);
-		$str = trim($str, '_');
-		return strtolower((string) $str);
-	}
+		return HVLString::camelCaseToSnakeCase($str);
+	} // Deprecated
 
 	public static function execHidden(string $appPath, string $phpPath = '/usr/local/bin/php', bool $testOnly = false): string
 	{
@@ -24,32 +24,13 @@ class HVLCore
 
 	public static function getRandomStr(int $length, string $chars = ''): string
 	{
-		if (!strlen($chars)) {
-			$chars = self::getStringRange('a', 'z')
-				. self::getStringRange('A', 'Z')
-				. self::getStringRange(0, 9);
-		}
-
-		$charsLength = strlen($chars) - 1;
-		$randomStr = '';
-
-		if ($charsLength <= 0) throw new \Exception('Character string length is too short.');
-
-		while (strlen($randomStr) < $length) {
-			$charPos = random_int(0, $charsLength);
-			$randomStr .= $chars[$charPos];
-		}
-
-		return $randomStr;
-	}
+		return HVLString::getRandomStr($length, $chars);
+	} // Deprecated
 
 	public static function getStringRange($start, $end): string
 	{
-		$range = range($start, $end);
-		$str = implode('', $range);
-
-		return $str;
-	}
+		return HVLString::getStringRange($start, $end);
+	} // Deprecated
 
 	public static function isCli(): bool
 	{
@@ -58,10 +39,6 @@ class HVLCore
 
 	public static function snakeCaseToCamelCase(string $str): string
 	{
-		$str = str_replace('_', ' ', $str);
-		$str = trim($str);
-		$str = ucwords($str);
-		$str = preg_replace('/\s+/', '', $str);
-		return lcfirst($str);
-	}
+		return HVLString::snakeCaseToCamelCase($str);
+	} // Deprecated
 }
