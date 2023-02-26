@@ -6,7 +6,7 @@ This class contains miscellaneous methods. When multiple methods fit under one s
 
 **HVLCore**
 
-### camelCaseToSnakeCase(string $str): string
+- camelCaseToSnakeCase(string $str): string
 
 This method converts camel cased string to snake cased string.
 
@@ -17,12 +17,12 @@ echo HVLCore::camelCaseToSnakeCase('helloWorld'); // Outputs: hello_world
 
 `DEPRECATED: This method has been moved to the HVLString class.`
 
-### execHidden(string $appPath, string $phpPath = '/usr/local/bin/php', bool $testOnly = false): string
+- execHidden(string $appPath, string $phpPath = '/usr/local/bin/php', bool $testOnly = false): string
 
 This method executes a PHP application is the background and returns the command executed.
 
 
-> getRandomStr(int $length, string $chars = ''): string
+- getRandomStr(int $length, string $chars = ''): string
 
 This method returns a random string from the characters provided.
 If no characters is provided, it will create a range from A-Z, a-z, and 0-9.
