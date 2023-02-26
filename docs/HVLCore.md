@@ -6,7 +6,7 @@ This class contains miscellaneous methods. When multiple methods fit under one s
 
 **HVLCore**
 
-- camelCaseToSnakeCase(string $str): string
+- > camelCaseToSnakeCase(string $str): string
 
 	This method converts camel cased string to snake cased string.
 
