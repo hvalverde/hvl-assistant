@@ -15,7 +15,7 @@ This class contains miscellaneous methods. When multiple methods fit under one s
 	echo HVLCore::camelCaseToSnakeCase('helloWorld'); // Outputs: hello_world
 	```
 
-	***DEPRECATED: This method has been moved to the HVLString class.***
+	**DEPRECATED:** This method has been moved to the [HVLString.md](HVLString) class.
 
 - execHidden(string $appPath, string $phpPath = '/usr/local/bin/php', bool $testOnly = false): string
 
