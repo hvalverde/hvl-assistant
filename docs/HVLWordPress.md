@@ -1,4 +1,6 @@
-# HVL-Assistant / HVL-WordPress
+# HVL-Assistant \ HVL-WordPress
+
+...insert summary here...
 
 ## Examples
 

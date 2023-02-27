@@ -1,16 +1,14 @@
-# HVL-Assistant / HVL-Core
+# HVL-Assistant \ HVL-Core
 
 This class contains miscellaneous methods. When multiple methods fit under one scope, a separate class is created and the methods are moved to it.
 
 ## Class Reference
 
-**HVLCore**
-
 - > camelCaseToSnakeCase(string $str): string
 
 	This method converts camel cased string to snake cased string.
 
-	Example:
+	**Example:**
 	```php
 	echo HVLCore::camelCaseToSnakeCase('helloWorld'); // Outputs: hello_world
 	```
@@ -32,7 +30,7 @@ This class contains miscellaneous methods. When multiple methods fit under one s
 
 	This method returns a string of the desired character range.
 
-	Example:
+	**Example:**
 	```php
 	echo HVLCore::getStringRange('A', 'Z'); // Outputs: ABCDEFGHIJKLMNOPQRSTUVWXYZ
 	```
@@ -47,9 +45,19 @@ This class contains miscellaneous methods. When multiple methods fit under one s
 
 	This method converts snake cased string to camel cased.
 
-	Example:
+	**Example:**
 	```php
 	echo HVLCore::snakeCaseToCamelCase('hello_world'); // Outputs: helloWorld
 	```
 
 	**DEPRECATED:** This method has been moved to the [HVLString](HVLString.md) class.
+
+- > validEmail(string $email): bool
+
+	This method returns true if the email provide is valid. Otherwise it will return false.
+
+	**Example:**
+	```php
+	var_dump(HVLCore::validEmail('user@domain.com')); // Outputs: true
+	var_dump(HVLCore::validEmail('domain.com')); // Outputs: false
+	```

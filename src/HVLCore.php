@@ -13,13 +13,13 @@ class HVLCore
 		return HVLString::camelCaseToSnakeCase($str);
 	} // Deprecated
 
-	public static function execHidden(string $appPath, string $phpPath = '/usr/local/bin/php', bool $testOnly = false): string
+	public static function execHidden(string $app_path, string $php_path = '/usr/local/bin/php', bool $test_only = false): string
 	{
-		$execCommand = "$phpPath -f $appPath > /dev/null 2>/dev/null &";
+		$exec_command = "$php_path -f $app_path > /dev/null 2>/dev/null &";
 
-		if (!$testOnly) exec($execCommand);
+		if (!$test_only) exec($exec_command);
 
-		return $execCommand;
+		return $exec_command;
 	}
 
 	public static function getRandomStr(int $length, string $chars = ''): string
@@ -41,4 +41,9 @@ class HVLCore
 	{
 		return HVLString::snakeCaseToCamelCase($str);
 	} // Deprecated
+
+	public static function validEmail(string $email): bool
+	{
+		return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
+	}
 }

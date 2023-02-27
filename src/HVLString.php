@@ -71,4 +71,9 @@ class HVLString
 		$str = self::snakeCaseToPascalCase($str);
 		return lcfirst($str);
 	}
+
+	public static function validRegex(string $pattern): bool
+	{
+		return (bool) (@preg_match($pattern, '') !== false);
+	}
 }
