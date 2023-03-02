@@ -1,6 +1,6 @@
 # HVL-Assistant Documentation
 
-...
+...insert summary here...
 
 ## Library References
 

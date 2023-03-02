@@ -26,4 +26,4 @@ You can use Composer to install HVL Assistant as a dependency in your project:
 composer require hvalverde/hvl-assistant
 ```
 
-It is highly recommended to use composer to install it for the latest stable version.
+It is highly recommended to use composer to install the latest stable version.

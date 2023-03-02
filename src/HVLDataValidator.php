@@ -24,7 +24,7 @@ class HVLDataValidator
 
 	protected $rules = [];
 
-	public function getErrorMessage(string $field_name, string $rule_name, string $rule_target = null): string
+	public function getErrorMessage(string $field_name, string $rule_name, string $rule_target = ''): string
 	{
 		$field_rules = $this->getRules($field_name);
 		$error_msg = $field_rules['errors'][$rule_name]
@@ -52,7 +52,7 @@ class HVLDataValidator
 		);
 
 		foreach ($ps_data as $key => $value) {
-			if (is_null($value)) unset($ps_data[$key]);
+			if (empty($value)) unset($ps_data[$key]);
 		}
 
 		return $ps_data;
@@ -86,7 +86,7 @@ class HVLDataValidator
 	public function setRules(array $rules, bool $append_rules = false): array
 	{
 		if (empty($rules)) {
-			throw new \Exception("Parameter rules is empty.");
+			throw new \InvalidArgumentException("Parameter rules is empty.");
 		}
 
 		self::validateRules($rules);
@@ -123,10 +123,10 @@ class HVLDataValidator
 
 	public static function convertRulesStringToArray(string $rule_string): array
 	{
-		$exploded_rules = explode('|', $rule_string);
 		$rules_arr = [];
+		$split_rules = preg_split('/\|(?![^\[]*\])/', $rule_string);
 
-		foreach ($exploded_rules as $rule_str) {
+		foreach ($split_rules as $rule_str) {
 			$rule_str = trim($rule_str);
 
 			preg_match('/^(?<rule_name>\w+)(\[(?<rule_target>.+)\])?$/', $rule_str, $matches);
@@ -135,7 +135,7 @@ class HVLDataValidator
 				throw new \Exception("Validation rule name not found in rule string. '$rule_str'");
 			}
 
-			$rules_arr[$matches['rule_name']] = $matches['rule_target'] ?? null;
+			$rules_arr[$matches['rule_name']] = $matches['rule_target'] ?? '';
 		}
 
 		return $rules_arr;
