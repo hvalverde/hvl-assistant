@@ -7,6 +7,8 @@ namespace HValverde\HVLAssistant;
 use HValverde\HVLAssistant\HVLCore;
 use HValverde\HVLAssistant\HVLString;
 
+use Exception;
+
 class HVLDataValidator
 {
 	const DEFAULT_ERRORS = [
@@ -32,7 +34,7 @@ class HVLDataValidator
 			?? null;
 
 		if (is_null($error_msg)) {
-			throw new \Exception("Error message not found for rule name. '$rule_name'");
+			throw new Exception("Error message not found for rule name. '$rule_name'");
 		}
 
 		$ps_data = $this->getParserData($field_name, ['{rule_target}' => $rule_target]);
@@ -64,7 +66,7 @@ class HVLDataValidator
 
 		if (!array_key_exists($field_name, $this->rules)) {
 			if ($throw_exception) {
-				throw new \Exception("Field name '$field_name' not found in set rules.");
+				throw new Exception("Field name '$field_name' not found in set rules.");
 			}
 			return null;
 		}
@@ -86,7 +88,7 @@ class HVLDataValidator
 	public function setRules(array $rules, bool $append_rules = false): array
 	{
 		if (empty($rules)) {
-			throw new \InvalidArgumentException("Parameter rules is empty.");
+			throw new Exception("Parameter rules is empty.");
 		}
 
 		self::validateRules($rules);
@@ -105,7 +107,7 @@ class HVLDataValidator
 	public function validateData(array $data): array
 	{
 		if (empty($this->getRules())) {
-			throw new \Exception("Validator rules not set.");
+			throw new Exception("Validator rules not set.");
 		}
 
 		$validation_results = [];
@@ -132,7 +134,7 @@ class HVLDataValidator
 			preg_match('/^(?<rule_name>\w+)(\[(?<rule_target>.+)\])?$/', $rule_str, $matches);
 
 			if (empty($matches['rule_name'])) {
-				throw new \Exception("Validation rule name not found in rule string. '$rule_str'");
+				throw new Exception("Validation rule name not found in rule string. '$rule_str'");
 			}
 
 			$rules_arr[$matches['rule_name']] = $matches['rule_target'] ?? '';
@@ -210,7 +212,7 @@ class HVLDataValidator
 	{
 		foreach ($rules as $key => $value) {
 			if (!array_key_exists('rules', $value)) {
-				throw new \Exception("Validation rules is not set for '{$key}'.");
+				throw new Exception("Validation rules is not set for '{$key}'.");
 			}
 
 			self::validateRuleString($value['rules']);
@@ -229,18 +231,18 @@ class HVLDataValidator
 	public static function validateRuleString(string $rules): bool
 	{
 		if (empty($rules)) {
-			throw new \Exception("Validation rule string is empty.");
+			throw new Exception("Validation rule string is empty.");
 		}
 
 		$rules_arr = self::convertRulesStringToArray($rules);
 
 		foreach ($rules_arr as $rule_name => $rule_target) {
 			if (!self::ruleMethodExists($rule_name)) {
-				throw new \Exception("Validation rule method not found. '$rule_name'");
+				throw new Exception("Validation rule method not found. '$rule_name'");
 			}
 
 			if (!self::validateRuleValue($rule_name, $rule_target)) {
-				throw new \Exception("Validation rule value not valid for rule name. '$rule_name\[$rule_target\]'");
+				throw new Exception("Validation rule value not valid for rule name. '$rule_name\[$rule_target\]'");
 			}
 		}
 

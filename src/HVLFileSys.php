@@ -6,16 +6,39 @@ namespace HValverde\HVLAssistant;
 
 use HValverde\HVLAssistant\HVLArray;
 
+use Exception;
+
 class HVLFileSys
 {
+	/**
+	 * @deprecated Use appendDirSeparator() instead.
+	 */
 	public static function addDirSeparator(string $path, string $separator = '/'): string
+	{
+		return self::appendDirSeparator($path, $separator);
+	}
+
+	/**
+	 * @deprecated Use appendFileExtension() instead.
+	 */
+	public static function addFileExtension(string $fileName, string $fileExt): string
+	{
+		return self::appendFileExtension($fileName, $fileExt);
+	}
+
+	public static function appendDirSeparator(string $path, string $separator = '/'): string
 	{
 		return rtrim($path, $separator) . $separator;
 	}
 
-	public static function addFileExtension(string $fileName, string $fileExt): string
+	public static function appendFileExtension(string $fileName, string $fileExt): string
 	{
 		$fileExt = ltrim($fileExt, '.');
+
+		if (pathinfo($fileName, PATHINFO_EXTENSION) === $fileExt) {
+			return $fileName;
+		}
+
 		$fileName = self::removeFileExtension($fileName, $fileExt);
 
 		return $fileName . '.' . $fileExt;
@@ -23,16 +46,19 @@ class HVLFileSys
 
 	public static function copyDir(string $srcPath, string $destPath): array
 	{
-		$destPath = self::addDirSeparator($destPath);
-		$srcPath = self::addDirSeparator($srcPath);
+		$destPath = self::appendDirSeparator($destPath);
+		$srcPath = self::appendDirSeparator($srcPath);
 
 		if (!self::dirExists($srcPath)) return [];
 
 		$dirTree = self::getDirTree($srcPath);
-		$dirTree = HVLArray::pregFilterValues('/^' . preg_quote($srcPath, '/') . '/', '', $dirTree);
-		$logData = [];
+		$dirTree = HVLArray::pregReplaceValues('/^' . preg_quote($srcPath, '/') . '/', '', $dirTree);
 
 		self::createDir($destPath);
+
+		$logData = [
+			$srcPath => $destPath
+		];
 
 		foreach ($dirTree as $item) {
 			$curPath = $srcPath . $item;
@@ -53,7 +79,7 @@ class HVLFileSys
 	public static function copyFile(string $srcPath, string $destPath, bool $replace = false): void
 	{
 		$fileName = basename($srcPath);
-		$destPath = self::addDirSeparator($destPath) . $fileName;
+		$destPath = self::appendDirSeparator($destPath) . $fileName;
 
 		if (self::fileExists($destPath)) {
 			if (!$replace) return;
@@ -75,7 +101,11 @@ class HVLFileSys
 	{
 		self::createDir(dirname($filePath));
 
-		if (self::fileExists($filePath)) self::deleteFiles([$filePath]);
+		if (self::fileExists($filePath)) {
+			if (!$replace) return;
+
+			self::deleteFiles([$filePath]);
+		}
 
 		file_put_contents($filePath, $data, LOCK_EX);
 	}
@@ -108,6 +138,25 @@ class HVLFileSys
 		return self::_deleteFileSystemItem($filePaths, false);
 	}
 
+	protected static function _deleteFileSystemItem(array $paths, bool $isDir = true): array
+	{
+		foreach ($paths as $itemPath) {
+			if ($isDir) {
+				if (!self::dirExists($itemPath)) continue;
+
+				rmdir($itemPath);
+			} else {
+				if (!self::fileExists($itemPath)) continue;
+
+				unlink($itemPath);
+			}
+
+			$deletedItems[] = $itemPath;
+		}
+
+		return $deletedItems ?? [];
+	}
+
 	public static function dirExists(string $directoryPath): bool
 	{
 		return file_exists($directoryPath) && is_dir($directoryPath);
@@ -121,7 +170,7 @@ class HVLFileSys
 	public static function forceDownload(string $contentType, string $fileName, string $data): void
 	{
 		header("Content-Type: $contentType");
-        header("Content-Disposition: attachment; filename=\"$fileName\"");
+		header("Content-Disposition: attachment; filename=\"$fileName\"");
 		echo $data;
 	}
 
@@ -130,7 +179,7 @@ class HVLFileSys
 		$tree = [];
 
 		if (self::dirExists($path)) {
-			$path = self::addDirSeparator($path);
+			$path = self::appendDirSeparator($path);
 			$tree[] = $path;
 			$list = glob($path . '*');
 
@@ -178,40 +227,21 @@ class HVLFileSys
 
 	public static function removeFileExtension(string $fileName, string $fileExt = ''): string
 	{
-		if (empty($fileName)) throw new \Exception("File name cannot be empty.");
+		if (empty($fileName)) throw new Exception("File name cannot be empty.");
 
 		if ($fileName[-1] === '/') return $fileName;
 
-		$fileExt = ltrim($fileExt, '.');
-		$fileName = rtrim($fileName, '.');
 		$pathInfo = pathinfo($fileName);
-		$piDir = $pathInfo['dirname'];
+		$piDir = $pathInfo['dirname'] !== '.' ? $pathInfo['dirname'] . '/' : '';
 		$piExt = $pathInfo['extension'] ?? '';
 		$piFile = $pathInfo['filename'];
 
 		if (empty($piExt) || empty($piFile)) return $fileName;
+
 		if (empty($fileExt)) $fileExt = $piExt;
-		if (strcasecmp($piExt, $fileExt) === 0) return $piDir . '/' . $piFile;
+
+		if (strcasecmp($piExt, $fileExt) === 0) return $piDir . $piFile;
 
 		return $fileName;
-	}
-
-	protected static function _deleteFileSystemItem(array $paths, bool $isDir = true): array
-	{
-		foreach ($paths as $itemPath) {
-			if ($isDir) {
-				if (!self::dirExists($itemPath)) continue;
-
-				rmdir($itemPath);
-			} else {
-				if (!self::fileExists($itemPath)) continue;
-
-				unlink($itemPath);
-			}
-
-			$deletedItems[] = $itemPath;
-		}
-
-		return $deletedItems ?? [];
 	}
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace HValverde\HVLAssistant;
 
-use HValverde\HVLAssistant\HVLCore;
+use Exception;
 
 class HVLArray
 {
@@ -28,10 +28,36 @@ class HVLArray
 		return $newArr;
 	}
 
+	protected static function _blankCaseToBlankCaseKeys(array $callback, array $array, bool $recursive = true): array
+	{
+		$newArr = [];
+
+		foreach ($array as $key => $value) {
+			$key = is_string($key) && !is_numeric($key)
+				? call_user_func_array($callback, [$key])
+				: $key;
+
+			$newArr[$key] = $recursive && is_array($value) && count($value)
+				? self::_blankCaseToBlankCaseKeys($callback, $value, $recursive)
+				: $value;
+		}
+
+		return $newArr;
+	}
+
+	public static function camelCaseToPascalCaseKeys(array $array, bool $recursive = true): array
+	{
+		return self::_blankCaseToBlankCaseKeys(
+			[HVLString::class, 'camelCaseToPascalCase'],
+			$array,
+			$recursive
+		);
+	}
+
 	public static function camelCaseToSnakeCaseKeys(array $array, bool $recursive = true): array
 	{
 		return self::_blankCaseToBlankCaseKeys(
-			[HVLCore::class, 'camelCaseToSnakeCase'],
+			[HVLString::class, 'camelCaseToSnakeCase'],
 			$array,
 			$recursive
 		);
@@ -42,9 +68,14 @@ class HVLArray
 		return !empty($array) && array_keys($array) !== range(0, count($array) - 1);
 	}
 
-	public static function isSequential(array $array): bool
+	public static function isIndexed(array $array): bool
 	{
 		return !self::isAssociative($array);
+	}
+
+	public static function isSequential(array $array): bool
+	{
+		return self::isIndexed($array);
 	}
 
 	public static function multiToAssociative(array $data, string $separator = '.', string $root_key = NULL): array
@@ -66,7 +97,7 @@ class HVLArray
 	{
 		$keys = array_column($array, $key);
 
-		if (count($keys) !== count($array)) throw new \Exception(
+		if (count($keys) !== count($array)) throw new Exception(
 			"Some rows are missing the key '$key'."
 		);
 
@@ -75,7 +106,33 @@ class HVLArray
 		return $array;
 	}
 
+	public static function pascalCaseToCamelCaseKeys(array $array, bool $recursive = true): array
+	{
+		return self::_blankCaseToBlankCaseKeys(
+			[HVLString::class, 'pascalCaseToCamelCase'],
+			$array,
+			$recursive
+		);
+	}
+
+	public static function pascalCaseToSnakeCaseKeys(array $array, bool $recursive = true): array
+	{
+		return self::_blankCaseToBlankCaseKeys(
+			[HVLString::class, 'pascalCaseToSnakeCase'],
+			$array,
+			$recursive
+		);
+	}
+
+	/**
+	 * @deprecated Use pregReplaceKeys() instead.
+	 */
 	public static function pregFilterKeys(string $pattern, string $replacement, array $array, bool $recursive = false): array
+	{
+		return self::pregReplaceKeys($pattern, $replacement, $array, $recursive);
+	}
+
+	public static function pregReplaceKeys(string $pattern, string $replacement, array $array, bool $recursive = false): array
 	{
 		$newArr = [];
 
@@ -86,7 +143,7 @@ class HVLArray
 			if (!strlen($newKey)) continue;
 
 			if ($recursive && is_array($value)) {
-				$value = self::pregFilterKeys($pattern, $replacement, $value, $recursive);
+				$value = self::pregReplaceKeys($pattern, $replacement, $value, $recursive);
 			}
 
 			$newArr[$newKey] = $value;
@@ -95,11 +152,19 @@ class HVLArray
 		return $newArr;
 	}
 
+	/**
+	 * @deprecated Use pregReplaceKeys() instead.
+	 */
 	public static function pregFilterValues(string $pattern, string $replacement, array $array, bool $recursive = false): array
+	{
+		return self::pregReplaceValues($pattern, $replacement, $array, $recursive);
+	}
+
+	public static function pregReplaceValues(string $pattern, string $replacement, array $array, bool $recursive = false): array
 	{
 		foreach ($array as $key => $value) {
 			if (is_array($value)) {
-				$array[$key] = self::pregFilterValues($pattern, $replacement, $value, $recursive);
+				$array[$key] = self::pregReplaceValues($pattern, $replacement, $value, $recursive);
 				continue;
 			}
 
@@ -119,7 +184,16 @@ class HVLArray
 	public static function snakeCaseToCamelCaseKeys(array $array, bool $recursive = true): array
 	{
 		return self::_blankCaseToBlankCaseKeys(
-			[HVLCore::class, 'snakeCaseToCamelCase'],
+			[HVLString::class, 'snakeCaseToCamelCase'],
+			$array,
+			$recursive
+		);
+	}
+
+	public static function snakeCaseToPascalCaseKeys(array $array, bool $recursive = true): array
+	{
+		return self::_blankCaseToBlankCaseKeys(
+			[HVLString::class, 'snakeCaseToPascalCase'],
 			$array,
 			$recursive
 		);
@@ -132,22 +206,5 @@ class HVLArray
 		});
 
 		return $array;
-	}
-
-	protected static function _blankCaseToBlankCaseKeys(array $callback, array $array, bool $recursive = true): array
-	{
-		$newArr = [];
-
-		foreach ($array as $key => $value) {
-			$key = is_string($key) && !is_numeric($key)
-				? call_user_func_array($callback, [$key])
-				: $key;
-
-			$newArr[$key] = $recursive && is_array($value) && count($value)
-				? self::_blankCaseToBlankCaseKeys($callback, $value, $recursive)
-				: $value;
-		}
-
-		return $newArr;
 	}
 }
