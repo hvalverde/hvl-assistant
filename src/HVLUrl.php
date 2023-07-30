@@ -6,6 +6,8 @@ namespace HValverde\HVLAssistant;
 
 use HValverde\HVLAssistant\HVLCore;
 
+use Exception;
+
 class HVLUrl
 {
 	public static function getFullUrl(): string
@@ -34,7 +36,7 @@ class HVLUrl
 	public static function getUrlHost(string $url = ''): string
 	{
 		if (!self::validUrl($url)) {
-			throw new \Exception("Invalid URL provided: '" . print_r($url, true) . "'");
+			throw new Exception("Invalid URL provided: '" . print_r($url, true) . "'");
 		}
 
 		if (!strlen($url)) $url = self::getFullUrl();
@@ -45,7 +47,7 @@ class HVLUrl
 	public static function getUrlPath(string $url = ''): string
 	{
 		if (!self::validUrl($url)) {
-			throw new \Exception("Invalid URL provided: '" . print_r($url, true) . "'");
+			throw new Exception("Invalid URL provided: '" . print_r($url, true) . "'");
 		}
 
 		if (!strlen($url)) $url = self::getFullUrl();

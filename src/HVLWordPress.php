@@ -9,6 +9,8 @@ use HValverde\HVLAssistant\HVLFileSys;
 use HValverde\HVLAssistant\HVLJson;
 use HValverde\HVLAssistant\HVLUrl;
 
+use Exception;
+
 class HVLWordPress
 {
 	const API_PATH		= '/wp-json/wp/v2/';
@@ -39,11 +41,11 @@ class HVLWordPress
 
 	public function buildApiUrl(string $resource, array $query = []): string
 	{
-		if (empty($resource)) throw new \Exception(
+		if (empty($resource)) throw new Exception(
 			'Resource input should not be empty.'
 		);
 
-		if (!$this->validResource($resource)) throw new \Exception(
+		if (!$this->validResource($resource)) throw new Exception(
 			"Invalid WP resource: " . $resource
 		);
 
@@ -77,7 +79,7 @@ class HVLWordPress
 
 			$this->data[$resource] = [];
 		} else {
-			throw new \Exception('Invalid resource given: ' . $resource);
+			throw new Exception('Invalid resource given: ' . $resource);
 		}
 
 		return $data;
@@ -87,7 +89,7 @@ class HVLWordPress
 	{
 		$mediaDir = $this->getMediaDir();
 
-		if (empty($mediaDir)) throw new \Exception(
+		if (empty($mediaDir)) throw new Exception(
 			"Media directory is not set."
 		);
 
@@ -108,7 +110,7 @@ class HVLWordPress
 			if ($mediaDate > $mediaDestDate) {
 				HVLFileSys::createDir($mediaDestDir);
 
-				if (!copy($mediaSrc, $mediaDestPath)) throw new \Exception(
+				if (!copy($mediaSrc, $mediaDestPath)) throw new Exception(
 					"File failed to copy: '$mediaSrc' -> '$mediaDestPath'"
 				);
 
@@ -134,7 +136,7 @@ class HVLWordPress
 	{
 		$url = $this->getConfig('url');
 
-		if (empty($url)) throw new \Exception('URL host is not set.');
+		if (empty($url)) throw new Exception('URL host is not set.');
 
 		$apiUrl = $url . self::API_PATH;
 
@@ -158,13 +160,13 @@ class HVLWordPress
 
 			return $this->config[$key] ?? null;
 		} else {
-			throw new \Exception("Parameter 'key' must be an array or a string.");
+			throw new Exception("Parameter 'key' must be an array or a string.");
 		}
 	}
 
 	public function getData(string $resource, bool $checkCache = true): array
 	{
-		if (!$this->validResource($resource)) throw new \Exception(
+		if (!$this->validResource($resource)) throw new Exception(
 			"Invalid resource: '$resource'"
 		);
 
@@ -192,11 +194,11 @@ class HVLWordPress
 
 	public function getMediaUrlPath(string $mediaUrl): string
 	{
-		if (empty($mediaUrl)) throw new \Exception(
+		if (empty($mediaUrl)) throw new Exception(
 			"Media URL cannot be empty."
 		);
 
-		if (!HVLUrl::validUrl($mediaUrl)) throw new \Exception(
+		if (!HVLUrl::validUrl($mediaUrl)) throw new Exception(
 			"Media URL is not valid: $mediaUrl"
 		);
 
@@ -211,7 +213,7 @@ class HVLWordPress
 	{
 		$url = $this->getConfig('url');
 
-		if (empty($url)) throw new \Exception('URL host is not set.');
+		if (empty($url)) throw new Exception('URL host is not set.');
 
 		return $url . self::MEDIA_PATH;
 	}
@@ -268,7 +270,7 @@ class HVLWordPress
 	{
 		$jsonDir = $this->getJsonDir();
 
-		if (empty($jsonDir)) throw new \Exception(
+		if (empty($jsonDir)) throw new Exception(
 			"JSON directory is not set."
 		);
 
@@ -293,7 +295,7 @@ class HVLWordPress
 		} elseif (is_string($key)) {
 			if (strlen($key)) $this->config[$key] = $data;
 		} else {
-			throw new \Exception("Parameter 'key' must be an array or a string.");
+			throw new Exception("Parameter 'key' must be an array or a string.");
 		}
 
 		return $this->config;
@@ -301,7 +303,7 @@ class HVLWordPress
 
 	public function setJsonDir(string $dirPath): string
 	{
-		if (empty($dirPath)) throw new \Exception(
+		if (empty($dirPath)) throw new Exception(
 			"Invalid directory path: '$dirPath'"
 		);
 
@@ -314,16 +316,16 @@ class HVLWordPress
 
 	public function setLoopLimit(int $limit): int
 	{
-		if ($limit <= 0) throw new \Exception("Limit should be higher than 0.");
+		if ($limit <= 0) throw new Exception("Limit should be higher than 0.");
 
-		if ($limit >= PHP_INT_MAX) throw new \Exception("Limit should be less than " . PHP_INT_MAX . ".");
+		if ($limit >= PHP_INT_MAX) throw new Exception("Limit should be less than " . PHP_INT_MAX . ".");
 
 		return $this->loopLimit = $limit;
 	}
 
 	public function setMediaDir(string $dirPath): string
 	{
-		if (empty($dirPath)) throw new \Exception(
+		if (empty($dirPath)) throw new Exception(
 			"Invalid directory path: '$dirPath'"
 		);
 
@@ -336,16 +338,16 @@ class HVLWordPress
 
 	public function setPerPageLimit(int $limit): int
 	{
-		if ($limit < 1) throw new \Exception("Limit should be higher than 0.");
+		if ($limit < 1) throw new Exception("Limit should be higher than 0.");
 
-		if ($limit > 100) throw new \Exception("Limit should be less than or equal to 100.");
+		if ($limit > 100) throw new Exception("Limit should be less than or equal to 100.");
 
 		return $this->perPageLimit = $limit;
 	}
 
 	public function setUrl(string $url): string
 	{
-		if (!HVLUrl::validUrl($url)) throw new \Exception("Invalid URL: $url");
+		if (!HVLUrl::validUrl($url)) throw new Exception("Invalid URL: $url");
 
 		$this->setConfig('url', $url);
 

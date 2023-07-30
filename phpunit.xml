@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit bootstrap="vendor/autoload.php" colors="true" stopOnError="true" stopOnFailure="false" verbose="true">
+	<php>
+		<ini name="display_errors" value="1"/>
+		<ini name="error_reporting" value="-1"/>
+		<server name="APP_ENV" value="development"/>
+		<const name="MIN_PHP_VERSION" value="8.1"/>
+	</php>
+	<testsuites>
+		<testsuite name="HVL-Assistant">
+			<directory>./tests/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace HValverde\HVLAssistant;
 
+use Exception;
+
 class HVLString
 {
 	public static function camelCaseToPascalCase(string $str): string
@@ -29,7 +31,7 @@ class HVLString
 		$charsLength = strlen($chars) - 1;
 		$randomStr = '';
 
-		if ($charsLength <= 0) throw new \Exception('Character string length is too short.');
+		if ($charsLength <= 0) throw new Exception('Character string length is too short.');
 
 		while (strlen($randomStr) < $length) {
 			$charPos = random_int(0, $charsLength);
@@ -58,18 +60,18 @@ class HVLString
 		return self::camelCaseToSnakeCase($str);
 	}
 
+	public static function snakeCaseToCamelCase(string $str): string
+	{
+		$str = self::snakeCaseToPascalCase($str);
+		return lcfirst($str);
+	}
+
 	public static function snakeCaseToPascalCase(string $str): string
 	{
 		$str = str_replace('_', ' ', $str);
 		$str = trim($str);
 		$str = ucwords($str);
 		return preg_replace('/\s+/', '', $str);
-	}
-
-	public static function snakeCaseToCamelCase(string $str): string
-	{
-		$str = self::snakeCaseToPascalCase($str);
-		return lcfirst($str);
 	}
 
 	public static function validRegex(string $pattern): bool

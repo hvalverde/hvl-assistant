@@ -6,11 +6,13 @@ namespace HValverde\HVLAssistant;
 
 use HValverde\HVLAssistant\HVLFileSys;
 
+use Exception;
+
 class HVLJson
 {
 	public static function isJson(string $string): bool
 	{
-		if (empty($string)) throw new \InvalidArgumentException('The input string must not be empty.');
+		if (empty($string)) throw new Exception('The input string must not be empty.');
 
 		$result = json_decode($string, true);
 
@@ -19,24 +21,24 @@ class HVLJson
 		return is_array($result);
 	}
 
-	public static function jsonDecode(string $string): array
+	public static function jsonDecode(string $string, bool $return_array = true): array|object|null
 	{
-		if (empty($string)) throw new \InvalidArgumentException('The input string must not be empty.');
+		if ($string === '') return null;
 
-		$result = json_decode($string, true);
+		$result = json_decode($string, $return_array);
 
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			throw new \InvalidArgumentException("The input string is not a valid JSON string.");
+			throw new Exception("The input string is not a valid JSON string.");
 		}
-
-		if (!is_array($result)) throw new \UnexpectedValueException("The decoded JSON is not an array.");
 
 		return $result;
 	}
 
-	public static function jsonEncode(array $data, bool $pretty = false): string
+	public static function jsonEncode(array|object $data, bool $pretty = false): string
 	{
-		if (empty($data)) throw new \InvalidArgumentException("The input data must not be empty.");
+		if (empty($data)) throw new Exception("The input data must not be empty.");
+
+		if (is_object($data)) $data = (array) $data;
 
 		$options = JSON_UNESCAPED_SLASHES;
 
@@ -49,31 +51,31 @@ class HVLJson
 		$result = json_encode($data, $options);
 
 		if ($result === false) {
-			throw new \RuntimeException("Failed to encode data as JSON: " . json_last_error_msg());
+			throw new Exception("Failed to encode data as JSON: " . json_last_error_msg());
 		}
 
 		return $result;
 	}
 
-	public static function loadJsonFile(string $path): array
+	public static function loadJsonFile(string $path, bool $return_array = true): array|object|null
 	{
-		$path = HVLFileSys::addFileExtension($path, 'json');
+		$path = HVLFileSys::appendFileExtension($path, 'json');
 		
-		if (!HVLFileSys::fileExists($path)) throw new \InvalidArgumentException('File not found: ' . $path);
+		if (!HVLFileSys::fileExists($path)) throw new Exception('File not found: ' . $path);
 
 		$str = file_get_contents($path);
 
-		if ($str === false) throw new \RuntimeException('Failed to read the contents: ' . $path);
+		if ($str === false) throw new Exception('Failed to read the contents: ' . $path);
 
-		return self::jsonDecode($str);
+		return self::jsonDecode($str, $return_array);
 	}
 
-	public static function multiJsonDecode(array $arrayOfJsonStrings): array
+	public static function multiJsonDecode(array $arrayOfJsonStrings, bool $return_array = true): array
 	{
 		foreach ($arrayOfJsonStrings as &$jsonData) {
 			if (!self::isJson($jsonData)) continue;
 
-			$jsonData = self::jsonDecode($jsonData);
+			$jsonData = self::jsonDecode($jsonData, $return_array);
 		}
 
 		return $arrayOfJsonStrings;
@@ -82,7 +84,7 @@ class HVLJson
 	public static function multiJsonEncode(array $arrayOfArrayData): array
 	{
 		foreach ($arrayOfArrayData as &$jsonData) {
-			if (!is_array($jsonData)) continue;
+			if (!is_array($jsonData) && !is_object($jsonData)) continue;
 
 			$jsonData = self::jsonEncode($jsonData);
 		}
@@ -90,12 +92,12 @@ class HVLJson
 		return $arrayOfArrayData;
 	}
 
-	public static function multiLoadJsonFile(array $paths): array
+	public static function multiLoadJsonFile(array $paths, bool $return_array = true): array
 	{
 		$data = [];
 
 		foreach ($paths as $filePath) {
-			$data[$filePath] = self::loadJsonFile($filePath);
+			$data[$filePath] = self::loadJsonFile($filePath, $return_array);
 		}
 
 		return $data;
@@ -111,7 +113,7 @@ class HVLJson
 	public static function saveJsonFile(string $path, array $data, bool $pretty = false): void
 	{
 		$jsonStr = self::jsonEncode($data, $pretty);
-		$path = HVLFileSys::addFileExtension($path, 'json');
+		$path = HVLFileSys::appendFileExtension($path, 'json');
 
 		HVLFileSys::createFile($path, $jsonStr, true);
 	}
